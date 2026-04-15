@@ -5,4 +5,5 @@ sealed class TimerState {
     data class Running(val remainingMills: Long): TimerState()
     data class Paused(val remainingMills: Long): TimerState()
     object Stopped: TimerState()
+    object Finished: TimerState()
 }

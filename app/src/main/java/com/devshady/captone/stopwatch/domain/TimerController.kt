@@ -3,8 +3,8 @@ package com.devshady.captone.stopwatch.domain
 import kotlinx.coroutines.flow.Flow
 
 interface TimerController {
-    val timeFlow: Flow<TimerState>
-    fun start(endTime: Long, updateInterval: Long)
+    val timerState: Flow<TimerState>
+    fun start(totalTimeInMillis: Long, updateInterval: Long)
     fun pause()
     fun stop()
     fun reset()
