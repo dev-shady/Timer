@@ -1,4 +1,4 @@
-package com.devshady.captone.stopwatch.feature.Countdown
+package com.devshady.captone.stopwatch.ui.feature.countdown
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,6 +29,10 @@ class TimerViewModel : ViewModel() {
             get() = String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
+    companion object {
+        private const val UPDATE_INTERVAL = 1000L
+    }
+
     val timerController =
         CoroutineTimerController.getInstance(viewModelScope) //TODO inject application scope
 
@@ -36,7 +40,7 @@ class TimerViewModel : ViewModel() {
         MutableStateFlow<TimerUiState>(TimerUiState(TimerState.Idle))
     val uiState = uiStateMutable.asStateFlow()
 
-    init {
+    fun start(totalTimeInSeconds: Long) {
         viewModelScope.launch {
             timerController.timerState.collect { newTimerState ->
                 uiStateMutable.update { currentState ->
@@ -46,6 +50,6 @@ class TimerViewModel : ViewModel() {
                 }
             }
         }
-        timerController.start(10 * 1000, 1000)
+        timerController.start(totalTimeInSeconds * 1000, UPDATE_INTERVAL)
     }
 }
