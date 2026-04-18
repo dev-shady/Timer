@@ -8,8 +8,9 @@ import com.devshady.captone.stopwatch.domain.TimerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class TimerViewModel(applicationScope: CoroutineScope) : ViewModel() {
 
@@ -32,22 +33,22 @@ class TimerViewModel(applicationScope: CoroutineScope) : ViewModel() {
     }
 
     val timerController =
-        CoroutineTimerController.getInstance(viewModelScope) //TODO inject application scope
+        CoroutineTimerController.getInstance(applicationScope)
 
     private val uiStateMutable =
         MutableStateFlow<TimerUiState>(TimerUiState(TimerState.Idle))
     val uiState = uiStateMutable.asStateFlow()
 
     fun start(totalTimeInSeconds: Long) {
-        viewModelScope.launch {
-            timerController.timerState.collect { newTimerState ->
-                uiStateMutable.update { currentState ->
-                    currentState.copy(
+        timerController.timerState
+            .onEach { newTimerState ->
+                uiStateMutable.update {
+                    it.copy(
                         timerState = newTimerState,
                     )
                 }
             }
-        }
+            .launchIn(viewModelScope)
         timerController.start(totalTimeInSeconds * 1000, UPDATE_INTERVAL)
     }
 
