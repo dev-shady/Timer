@@ -18,14 +18,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.devshady.captone.stopwatch.TimerApp
 import com.devshady.captone.stopwatch.ui.components.CountdownTimerScreen
 import android.graphics.Color as JavaColor
 
 class TimerActivity : ComponentActivity() {
-    val timerViewModel: TimerViewModel by viewModels()
+
+    val timerViewModel: TimerViewModel by viewModels {
+        val applicationScope = (application as TimerApp).scope
+        TimerViewModel.providerFactory(applicationScope)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         // Required for statusBarsPadding() to work correctly
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(JavaColor.TRANSPARENT),
@@ -45,7 +51,7 @@ class TimerActivity : ComponentActivity() {
     fun TimerScreen() {
         val timerUiState = timerViewModel.uiState.collectAsStateWithLifecycle().value
 
-        Scaffold(containerColor = androidx.compose.ui.graphics.Color.Black) { innerPadding ->
+        Scaffold(containerColor = Color.Black) { innerPadding ->
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
