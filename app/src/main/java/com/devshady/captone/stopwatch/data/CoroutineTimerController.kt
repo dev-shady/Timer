@@ -32,6 +32,9 @@ internal class CoroutineTimerController private constructor(applicationScope: Co
                 getTimerFlow(command.duration, command.updateInterval)
                     .onCompletion { cause ->
                         if (cause == null) {
+                            // show 00:00:00 for 1 sec before going back to DurationPicker,
+                            // remove this after adding manual switching by "new timer" button
+                            delay(command.updateInterval)
                             timerCommand.value = TimerCommand.Stop
                         }
                     }
@@ -54,11 +57,15 @@ internal class CoroutineTimerController private constructor(applicationScope: Co
 
     fun getTimerFlow(totalTimeInMillis: Long, updateInterval: Long): Flow<TimerState> = flow {
         val endClockTime = SystemClock.elapsedRealtime() + totalTimeInMillis
-        // start the countdown timer off main thread
-        while (SystemClock.elapsedRealtime() < endClockTime) {
-            emit(TimerState.Running(endClockTime - SystemClock.elapsedRealtime()))
+        var remainingTime = totalTimeInMillis
+        while (remainingTime > 0) {
+            val timeToShow = ((remainingTime + 999) / 1000) * 1000 // in ms
+            emit(TimerState.Running(timeToShow))
             delay(updateInterval)
+            remainingTime = endClockTime - SystemClock.elapsedRealtime()
         }
+
+        emit(TimerState.Running(0L))
     }
 
     override fun start(totalTimeInMillis: Long, updateInterval: Long) {
