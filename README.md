@@ -3,5 +3,7 @@ and SOLID principles.
 
 TODO:
 
-- Robust timer with no seconds skipping
+- Timer Pause/Resume functionality
+- Save time in DataStore or Prefs to prevent timer reset in case of process death or app swiped by
+  user from recents
 - Dependency Injection using Hilt
