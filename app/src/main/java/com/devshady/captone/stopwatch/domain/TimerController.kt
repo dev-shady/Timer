@@ -7,5 +7,5 @@ interface TimerController {
     fun start(totalTimeInMillis: Long, updateInterval: Long)
     fun pause()
     fun stop()
-    fun reset()
+    fun resume()
 }
